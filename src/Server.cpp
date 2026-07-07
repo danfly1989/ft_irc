@@ -1,0 +1,87 @@
+#include "Server.hpp"
+#include "Client.hpp"
+#include "ServerException.hpp"
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <fcntl.h>
+#include <poll.h>
+#include <cstring>
+#include <iostream>
+#include <unistd.h>
+
+Server::Server(int port, std::string password) : port(port), password(password)
+{
+	master_fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	if(master_fd < 0)
+		throw ServerException("Socket() failed");
+	int opt = 1;
+	setsockopt(master_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+	fcntl(master_fd, F_SETFL, O_NONBLOCK);
+	struct sockaddr_in addr;
+	std::memset(&addr, 0, sizeof(addr));
+	addr.sin_family = AF_INET;
+	addr.sin_addr.s_addr = INADDR_ANY;
+	addr.sin_port = htons(port);
+
+	if(bind(master_fd, (struct sockaddr*)&addr, sizeof(addr)) <0 )
+		throw ServerException("bind() failed");
+
+	listen(master_fd, 10);
+	std::cout << "server listening on port " << port << std::endl;
+
+	struct pollfd pfd;
+	pfd.fd = master_fd;
+	pfd.events = POLLIN;
+	fds.push_back(pfd);
+}
+
+Server::~Server(){}
+
+void Server::run()
+{
+while(true)
+	{
+		int ret = poll(&fds[0], fds.size(), -1);
+		if(ret < 0){
+			std::cerr << "poll() failed" << std::endl;
+			break;
+		}
+		for(size_t i = 0; i < fds.size(); i++)
+		{
+			if(!(fds[i].revents & POLLIN))
+				continue;
+			if(fds[i].fd == master_fd)
+			{
+				struct sockaddr_in client_addr;
+				socklen_t client_len = sizeof(client_addr);
+				int client_fd = accept(master_fd, (struct sockaddr*)&client_addr, &client_len );
+				if(client_fd < 0)
+					continue;
+				std::cout << "New client connected: fd=" << client_fd << std::endl;
+				struct pollfd cpfd; 
+				cpfd.fd = client_fd;
+				cpfd.events = POLLIN;
+				fds.push_back(cpfd);
+			
+			}
+			else
+			{
+				char buf[512];
+				int n = recv(fds[i].fd, buf, sizeof(buf) - 1, 0);
+				if(n <= 0)
+				{
+				std::cout << "Client fd=" << fds[i].fd << " disconnected" <<std::endl;
+				close(fds[i].fd);
+				fds.erase(fds.begin() + i);
+				--i;
+				}	
+				else
+				{
+					buf[n]  = '\0';
+					std::cout << "fd=" << fds[i].fd << ": " << buf;
+				}
+			}
+		}
+	}
+}
+
