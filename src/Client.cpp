@@ -27,7 +27,8 @@ Client::~Client(){}
 
 bool Client::hasCompleteLine() const
 {
-	return buffer.find('\n') != std::string::npos;
+	return buffer.find("\r\n") != std::string::npos ||
+		buffer.find('\n') != std::string::npos;
 }
 
 //removing excess \r characters right now with an extra two lines instead
@@ -35,10 +36,18 @@ bool Client::hasCompleteLine() const
 //extra lines. 
 std::string Client::extractLine()
 {
-	size_t pos = buffer.find('\n');
+	if(!hasCompleteLine())
+		return "";
+
+	size_t pos = buffer.find("\r\n");
+	bool hasCRLF = (pos != std::string::npos);
+
+	if(!hasCRLF)
+		pos = buffer.find('\n');
+	if(pos == std::string::npos)
+		return "";
 	std::string line = buffer.substr(0, pos);
-	buffer.erase(0, pos + 1);
-	if(!line.empty() && line[line.size() - 1] == '\r')
-		line.erase(line.size() - 1);
-	return line;
+	//remove the terminator
+	buffer.erase(0, pos + (hasCRLF ? 2 : 1));
+	return line; 
 }

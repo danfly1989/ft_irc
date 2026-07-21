@@ -6,7 +6,7 @@
 /*   By: zwaschwi <zwaschwi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/24 15:15:24 by zwaschwi          #+#    #+#             */
-/*   Updated: 2026/07/07 13:00:19 by daflynn          ###   ########.fr       */
+/*   Updated: 2026/07/21 13:56:46 by daflynn          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ class Server {
         std::string                     password;
         int                             master_fd;
 	std::vector<struct pollfd>	fds; 
-        std::map<int, Client>           clients;
+        std::map<int, Client*>           clients;
         std::map<std::string, Channel>  channels;
 
     public:
@@ -41,7 +41,7 @@ class Server {
         int getPort() const;
         std::string getPassword() const;
         int getMasterFd() const;
-        std::map<int, Client> getClients() const;
+        std::map<int, Client*> getClients() const;
         std::map<std::string, Channel> getChannels() const;
         
         void setPort(int port);

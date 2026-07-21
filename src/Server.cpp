@@ -85,3 +85,9 @@ while(true)
 	}
 }
 
+        void Server::addClient(int fd, const Client& client)
+	{
+		(void)fd;
+		(void)client;		
+	}
+
