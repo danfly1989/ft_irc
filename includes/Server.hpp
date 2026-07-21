@@ -6,7 +6,7 @@
 /*   By: zwaschwi <zwaschwi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/24 15:15:24 by zwaschwi          #+#    #+#             */
-/*   Updated: 2026/07/21 13:56:46 by daflynn          ###   ########.fr       */
+/*   Updated: 2026/07/21 16:36:55 by daflynn          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ class Server {
         void setPassword(const std::string& password);
         void setMasterFd(int fd);
         
-        void addClient(int fd, const Client& client);
+        void addClient(int fd, Client* client);
         void removeClient(int fd);
         void addChannel(const std::string& name, const Channel& channel);
         void removeChannel(const std::string& name);

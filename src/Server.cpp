@@ -85,9 +85,8 @@ while(true)
 	}
 }
 
-        void Server::addClient(int fd, const Client& client)
+        void Server::addClient(int fd, Client* client)
 	{
-		(void)fd;
-		(void)client;		
+		clients[fd] = client;
 	}
 
