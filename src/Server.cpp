@@ -8,6 +8,7 @@
 #include <cstring>
 #include <iostream>
 #include <unistd.h>
+#include <arpa/inet.h>
 
 Server::Server(int port, std::string password) : port(port), password(password)
 {
@@ -17,15 +18,19 @@ Server::Server(int port, std::string password) : port(port), password(password)
 	int opt = 1;
 	setsockopt(master_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 	fcntl(master_fd, F_SETFL, O_NONBLOCK);
+
+	//create a socket
 	struct sockaddr_in addr;
 	std::memset(&addr, 0, sizeof(addr));
 	addr.sin_family = AF_INET;
 	addr.sin_addr.s_addr = INADDR_ANY;
 	addr.sin_port = htons(port);
-
+	
+	//bind
 	if(bind(master_fd, (struct sockaddr*)&addr, sizeof(addr)) <0 )
 		throw ServerException("bind() failed");
 
+	//listen
 	listen(master_fd, 10);
 	std::cout << "server listening on port " << port << std::endl;
 
@@ -34,6 +39,7 @@ Server::Server(int port, std::string password) : port(port), password(password)
 	pfd.events = POLLIN;
 	fds.push_back(pfd);
 }
+
 
 Server::~Server(){}
 
@@ -54,7 +60,10 @@ while(true)
 			{
 				struct sockaddr_in client_addr;
 				socklen_t client_len = sizeof(client_addr);
+				//accept
 				int client_fd = accept(master_fd, (struct sockaddr*)&client_addr, &client_len );
+				Client* newClient = new Client(client_fd, inet_ntoa(client_addr.sin_addr));
+				addClient(client_fd, newClient);
 				if(client_fd < 0)
 					continue;
 				std::cout << "New client connected: fd=" << client_fd << std::endl;
