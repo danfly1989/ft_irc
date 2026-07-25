@@ -62,9 +62,9 @@ while(true)
 				socklen_t client_len = sizeof(client_addr);
 				//accept
 				int client_fd = accept(master_fd, (struct sockaddr*)&client_addr, &client_len );
-				Client* newClient = new Client(client_fd, inet_ntoa(client_addr.sin_addr));
 				if(client_fd < 0)
 					continue;
+				Client* newClient = new Client(client_fd, inet_ntoa(client_addr.sin_addr));
 				addClient(client_fd, newClient);
 				std::cout << "New client connected: fd=" << client_fd << std::endl;
 				struct pollfd cpfd; 
