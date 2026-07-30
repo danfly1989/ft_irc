@@ -6,7 +6,7 @@
 /*   By: zwaschwi <zwaschwi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/24 15:15:24 by zwaschwi          #+#    #+#             */
-/*   Updated: 2026/07/21 16:36:55 by daflynn          ###   ########.fr       */
+/*   Updated: 2026/07/30 17:36:44 by daflynn          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ class Server {
         void removeClient(int fd);
         void addChannel(const std::string& name, const Channel& channel);
         void removeChannel(const std::string& name);
-        void processCommand(Client* client, const std::string& command);
+        void processCommand(Client* client, const std::string& line);
         void sendReply(int client_fd, const std::string& reply);
 };
 #endif

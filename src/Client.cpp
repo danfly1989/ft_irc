@@ -56,3 +56,20 @@ void Client::appendToBuffer(const char* data, size_t size)
 {
 	buffer.append(data, size);
 }
+
+int Client::getSocketFd() const
+{
+	return socket_fd;
+}
+
+bool Client::isAuthenticated() const
+{
+	return is_authenticated;
+}
+
+void Client::setAuthenticated(bool authenticated)
+{
+	is_authenticated = authenticated;
+}
+
+

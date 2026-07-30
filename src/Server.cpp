@@ -9,7 +9,10 @@
 #include <iostream>
 #include <unistd.h>
 #include <arpa/inet.h>
+#include <sstream>
+#include <cctype>
 
+//constructor
 Server::Server(int port, std::string password) : port(port), password(password)
 {
 	master_fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
@@ -40,20 +43,43 @@ Server::Server(int port, std::string password) : port(port), password(password)
 	fds.push_back(pfd);
 }
 
-
+//destructor
 Server::~Server(){}
 
+//functions
 void Server::sendReply(int client_fd, const std::string& message)
 {
 	std::string msg = message + "\r\n";
 	send(client_fd, msg.c_str(), msg.size(), 0);
 }
 
-void Server::processCommand(Client* client, const std::string& command)
+void Server::processCommand(Client* client, const std::string& line)
 {
-	(void)client; // Suppress unused parameter warning
-	std::cout << "[CMD] " << command << std::endl;}
+	std::istringstream iss(line);
+	std::string command;
+	iss >> command;
+	std::string params;
+	std::getline(iss >> std::ws, params);
+	for(size_t i = 0; i < command.length(); ++i)
+		command[i] = std::toupper(command[i]);
+	if(command == "PASS")
+	{
+		if(client->isAuthenticated())
+		{
+			sendReply(client->getSocketFd(), "462: You may not reregister");
+			return;	
+		}
+		if(params == password)
+		{
+			client->setAuthenticated(true);
+			sendReply(client->getSocketFd(), "Password accepted");
+		}else
+		{
+			sendReply(client->getSocketFd(), "464 : Password incorrect");
+		}
+	}}
 
+//the bones of this entire thing
 void Server::run()
 {
 while(true)
