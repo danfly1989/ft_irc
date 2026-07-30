@@ -53,5 +53,6 @@ class Server {
         void addChannel(const std::string& name, const Channel& channel);
         void removeChannel(const std::string& name);
         void processCommand(Client* client, const std::string& command);
+        void sendReply(int client_fd, const std::string& reply);
 };
 #endif

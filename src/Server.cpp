@@ -43,6 +43,12 @@ Server::Server(int port, std::string password) : port(port), password(password)
 
 Server::~Server(){}
 
+void Server::sendReply(int client_fd, const std::string& message)
+{
+	std::string msg = message + "\r\n";
+	send(client_fd, msg.c_str(), msg.size(), 0);
+}
+
 void Server::processCommand(Client* client, const std::string& command)
 {
 	(void)client; // Suppress unused parameter warning
