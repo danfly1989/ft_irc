@@ -39,7 +39,7 @@ class Client {
         Client();
 
         int getSocketFd() const;
-        std::string getIpAdress() const;
+        std::string getIpAddress() const;
         std::string getNickname() const;
         std::string getUsername() const;
         std::string getBuffer() const;
@@ -59,6 +59,7 @@ class Client {
         
         void addChannel(const std::string& channel);
         void removeChannel(const std::string& channel);
-};
+        void appendToBuffer(const char* data, size_t size);
+    };
 
 #endif

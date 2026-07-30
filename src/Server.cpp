@@ -43,6 +43,11 @@ Server::Server(int port, std::string password) : port(port), password(password)
 
 Server::~Server(){}
 
+void Server::processCommand(Client* client, const std::string& command)
+{
+	(void)client; // Suppress unused parameter warning
+	std::cout << "[CMD] " << command << std::endl;}
+
 void Server::run()
 {
 while(true)
@@ -64,6 +69,12 @@ while(true)
 				int client_fd = accept(master_fd, (struct sockaddr*)&client_addr, &client_len );
 				if(client_fd < 0)
 					continue;
+					//do not create a client for unusable fd
+				if(fcntl(client_fd, F_SETFL, O_NONBLOCK) < 0)
+				{
+					close(client_fd);
+					continue;
+				}
 				Client* newClient = new Client(client_fd, inet_ntoa(client_addr.sin_addr));
 				addClient(client_fd, newClient);
 				std::cout << "New client connected: fd=" << client_fd << std::endl;
@@ -79,15 +90,25 @@ while(true)
 				int n = recv(fds[i].fd, buf, sizeof(buf) - 1, 0);
 				if(n <= 0)
 				{
-				std::cout << "Client fd=" << fds[i].fd << " disconnected" <<std::endl;
-				close(fds[i].fd);
-				fds.erase(fds.begin() + i);
-				--i;
+					std::cout << "Client fd=" << fds[i].fd << " disconnected" <<std::endl;
+					removeClient(fds[i].fd);
+					close(fds[i].fd);
+					fds.erase(fds.begin() + i);
+					--i;
 				}	
 				else
 				{
 					buf[n]  = '\0';
-					std::cout << "fd=" << fds[i].fd << ": " << buf;
+					//get client object for this fd
+					Client* client = clients[fds[i].fd];
+					if(!client)continue;
+
+					//append the raw chunk to clients butfer
+					client->appendToBuffer(buf, n);
+					while(client->hasCompleteLine())
+					{
+						std::string line = client->extractLine();
+						processCommand(client, line);}
 				}
 			}
 		}
@@ -97,5 +118,15 @@ while(true)
         void Server::addClient(int fd, Client* client)
 	{
 		clients[fd] = client;
+	}
+
+	void Server::removeClient(int fd)
+	{
+		std::map<int, Client*>::iterator it = clients.find(fd);
+		if(it != clients.end())
+		{
+			delete it->second;
+			clients.erase(it);
+		}
 	}
 

@@ -51,3 +51,8 @@ std::string Client::extractLine()
 	buffer.erase(0, pos + (hasCRLF ? 2 : 1));
 	return line; 
 }
+
+void Client::appendToBuffer(const char* data, size_t size)
+{
+	buffer.append(data, size);
+}
