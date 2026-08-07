@@ -6,7 +6,7 @@
 /*   By: daflynn <daflynn@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/03 11:47:17 by daflynn           #+#    #+#             */
-/*   Updated: 2026/08/07 11:04:07 by daflynn          ###   ########.fr       */
+/*   Updated: 2026/08/07 11:12:28 by daflynn          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,4 +26,9 @@ Command::Command(Command const & other) : _auth_required(other._auth_required), 
 Command::~Command()
 {
 
+}
+
+bool Command::auth_required () const
+{
+	return this->_auth_required;
 }
