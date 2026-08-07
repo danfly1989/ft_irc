@@ -6,7 +6,7 @@
 /*   By: daflynn <daflynn@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/03 12:06:37 by daflynn           #+#    #+#             */
-/*   Updated: 2026/08/03 12:25:15 by daflynn          ###   ########.fr       */
+/*   Updated: 2026/08/07 15:33:29 by daflynn          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,7 @@
 class Pass : public Command
 {
 	public:
-		Pass();
-		Pass(Pass const & other);
-		Pass & operator=(Pass const & other);
+		Pass(bool auth_required, Server & server);
 		~Pass();
 
 	virtual void execute(Client*, std::vector<std::string>);

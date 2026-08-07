@@ -162,3 +162,7 @@ while(true)
 		}
 	}
 
+	std::string Server::getPassword() const
+{
+	return this->password;
+}
