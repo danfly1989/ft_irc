@@ -6,7 +6,7 @@
 /*   By: daflynn <daflynn@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/23 18:34:55 by daflynn           #+#    #+#             */
-/*   Updated: 2026/08/27 12:14:24 by daflynn          ###   ########.fr       */
+/*   Updated: 2026/08/27 13:06:24 by daflynn          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,4 +45,6 @@ void	Parser::invoke(Client * client, const std::string & line)
 	{
 		tokens.push_back(word);
 	}
+	if(tokens.empty())
+		return;
 }
